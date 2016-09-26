@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - geometry - cube</title>
+
+		<h1 style="color:blue;">Let's Play A Game! </h1>
+	<!-- 	
+		<embed src="https://storage.googleapis.com/juke-1379.appspot.com/juke-music/Dexter%20Britain/Creative%20Commons%20Volume%202/06%20Summers%20Coming.mp3" autostart="true" loop="true"
+		width="2" height="0">
+		</embed> -->
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				margin: 0px;
+				background-color: #000000;
+				overflow: hidden;
+			}
+
+	 </style>
+	</head>
+	<body>
+
+		<script src="js/three.js"></script>
+
+		<script>
+
+			var camera, scene, renderer;
+			var mesh;
+			var enemies = [];
+			var enemySpeed = 3;
+			var raycaster, plane, player;
+			var sphereRadius = 20;
+			var mouse = new THREE.Vector2();
+
+
+			init();
+			animate();
+
+			function init() {
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera.position.z = 400;
+
+				scene = new THREE.Scene();
+				
+				var geometry = new THREE.SphereGeometry( sphereRadius );
+				
+				var material = new THREE.MeshBasicMaterial({color: 0xffff00} );
+
+				var radius = 1000;
+				var nBoxes = 40;
+				for(var i = 0; i < nBoxes; i++){
+					mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set(radius/2 - radius * Math.random(), radius/2-radius*Math.random(), 0.0);
+					scene.add( mesh );
+					enemies.push(mesh);
+				}
+
+				player = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color: 0x00FFFF}));
+				
+				scene.add(player);
+				window.addEventListener( 'mousemove', onDocumentMouseMove, false);
+
+			}
+
+			function onDocumentMouseMove(event){
+				//event.prevetDefault();
+
+				mouse.x = (event.clientX /( window.innerWidth/16) )*2 -1;
+				mouse.y = -(event.clientY/ (window.innerHeight / 16) )*2 -1;
+				
+				player.position.set(  20* mouse.x,  20 * mouse.y, 0.0 );
+				console.log("player.position", player.position);
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				for(var i = 0; i < enemies.length; i++){
+					if(enemies[i].position.y < -500){
+						enemies[i].position.y = 500;
+					
+					}else{
+						if(enemies[i].position.distanceTo(player.position) < 2 * sphereRadius){
+							player.material.color.setHex(0xDC143C);
+							
+						}
+						enemies[i].position.y -= enemySpeed;
+					
+					}
+				}
+			renderer.render( scene, camera );
+			}
+
+		</script>
+
+	</body>
+</html>
