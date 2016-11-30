@@ -2,7 +2,7 @@
 
 This workshop is built using three.js library. The three.js library can be downloaded here: https://threejs.org/.
 
-After three.js libaray package download is completed, the save the folder with the dodgeball folder. Open the html file, the dodgeBall game can be played. 
+After three.js libaray package download is completed, then save the folder with the dodgeball folder. Open the html file, the dodgeBall game can be played. 
 
 Noted, the dodgeBall game has buttons. Some features are following:
 
