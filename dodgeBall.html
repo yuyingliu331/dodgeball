@@ -4,15 +4,13 @@
 		<title>Dodge Ball</title>
 		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<h1 style="color:blue;" content="width=device-width, initial-scale=1">Let's Play A Game! </h1>
-		
-		
+
+
 		<div>
 			<audio controls>
 	 		 <source src="https://storage.googleapis.com/juke-1379.appspot.com/juke-music/Dexter%20Britain/Creative%20Commons%20Volume%202/06%20Summers%20Coming.mp3" type="audio/ogg">
 	 		 </audio>
  		</div>
-		
-
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -25,27 +23,16 @@
 			#clockdiv{
 				font-size: 24px
 			}
-		
+
 	 </style>
 	</head>
 	<body>
-		<div id="map"></div>
-
-	    <script>
-	      var map;
-	      function initMap() {
-	        map = new google.maps.Map(document.getElementById('map'), {
-	          center: {lat: -34.397, lng: 150.644},
-	          zoom: 8
-	        });
-      	}
-      </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChFeGjF1kdEVtjImGPTJKXWKPO4B0X9ZA&callback=initMap"
-    async defer></script>
 		<div id="clockdiv" style="color:Hotpink" class="bg-warning"><center>You survived!</center> </div>
 		<button type="button" class="btn btn-success" onclick="startOver()">Start Over! </button>
+		<button type="button" class="btn btn-info" onclick="changeSpeed()">Change Speed!</button>
+		<button type="button" class="btn btn-warning" onclick="changeShape()">Add different Shapes!</button>
 		<div class="container-fluid">
-		
+
 		<script src="js/three.js"></script>
 		<script>
 
@@ -56,7 +43,7 @@
 			var raycaster, plane, player;
 			var sphereRadius = 20;
 			var mouse = new THREE.Vector2();
-			var target; 
+			var target;
 			var startTime, endTime;
 
 
@@ -71,45 +58,56 @@
 				document.body.appendChild( renderer.domElement );
 				startTime = new Date();
 
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 2000 );
 				camera.position.z = 400;
 
 				scene = new THREE.Scene();
-				
+
 				var geometry = new THREE.SphereGeometry( sphereRadius );
-				
+
 				var material = new THREE.MeshBasicMaterial({color: 0xffff00} );
 
 				var radius = 1000;
-				var nBoxes = 40;
+				var nBoxes = 100;
 				for(var i = 0; i < nBoxes; i++){
 					mesh = new THREE.Mesh( geometry, material );
 					mesh.position.set(radius/2 - radius * Math.random(), radius/2-radius*Math.random(), 0.0);
+					console.log("mesh location:", mesh.position);
 					scene.add( mesh );
 					enemies.push(mesh);
 				}
-			    target = new THREE.Mesh(new THREE.BoxGeometry(30,30,30),
-							new THREE.MeshBasicMaterial({color: 0x4B0082 } ) );
-			    target.position.set(radius/4 - radius * Math.random(), radius/4-radius*Math.random(), 0.0);
-				scene.add(target);
 
 				player = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color: 0x00FFFF}));
-				
+
 				scene.add(player);
 				window.addEventListener( 'mousemove', onDocumentMouseMove, false);
 
+			}
+			function changeShape(){
+				var radius = 1000;
+				 for(var i = 0; i < 40; i++){
+		    	    target = new THREE.Mesh(new THREE.BoxGeometry(30,30,30),
+						new THREE.MeshBasicMaterial({color: 0x4B0082 } ) );
+		    	    target.position.set(radius/4 - radius * Math.random(), radius/4-radius*Math.random(), 0.0);
+
+		    	    scene.add(target);
+		    	    enemies.push(target);
+		    	 }
 			}
 			function initializeClock(){
 				  var clock = document.getElementById("clockdiv");
 				  var gap = (Date.parse(endTime) - Date.parse(startTime))/1000;
 				  clock.innerHTML = "<center>"+'You survived '+gap+' seconds!'+"<center>";
-    
+
 			}
 			function startOver() {
 				startTime = new Date();
 				player.material.color.setHex(0x00FFFF);
 			}
+			function changeSpeed(){
+				enemySpeed ++;
 
+			}
 			function onDocumentMouseMove(event){
 				//event.prevetDefault();
 
@@ -120,24 +118,19 @@
 
 			function animate() {
 				requestAnimationFrame( animate );
-				target.position.y -= 4;
-				if(target.position.y < -500){
-					target.position.y = 500;
-				}
-				
+
 				for(var i = 0; i < enemies.length; i++){
 					if(enemies[i].position.y < -500){
 						enemies[i].position.y = 500;
 					}else{
 						if(enemies[i].position.distanceTo(player.position) < 2 * sphereRadius){
 							player.material.color.setHex(0xDC143C);
-							endTime = new Date();	
-							//alert("You have a collision!");
+							endTime = new Date();
 							initializeClock();
 							break;
 						}
 						enemies[i].position.y -= enemySpeed;
-					
+
 					}
 				}
 				renderer.render( scene, camera );
